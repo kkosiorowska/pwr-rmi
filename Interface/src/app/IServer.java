@@ -12,5 +12,4 @@ public interface IServer {
     zaś S jest jakąś klasą zawierającą rozwiązanie problemu plecakowego.
      */
     Solution solve(Instance instance) throws RemoteException;
-
 }
