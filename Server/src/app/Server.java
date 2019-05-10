@@ -7,14 +7,30 @@ import algorithms.RandomSolution;
 import knapSack.Instance;
 import knapSack.Solution;
 
+import java.rmi.AlreadyBoundException;
+import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 
 public class Server implements IServer {
     AbstractAlgorithm algorithm;
+    IRegister registers;
 
-    public Server(String name, String nameAlg ) {
+    public Server(String name, String nameAlg ) throws RemoteException, AlreadyBoundException, NotBoundException {
+        System.out.println("Server was created");
 
+        System.out.println("Server port: "+3006);
+        IServer server = (IServer) UnicastRemoteObject.exportObject(this,3006 );
+        Registry registry = LocateRegistry.getRegistry(Registry.REGISTRY_PORT);
+        registry.bind(name, this);
+        registers =(IRegister) registry.lookup("Register");
 
+        setAlgorithm(nameAlg);
+        OS os = new OS(name,algorithm.showDescription());
+
+        registers.register(os);
 
     }
 
@@ -48,7 +64,9 @@ public class Server implements IServer {
         return null;
     }
 
-    public static void main(String[] args){
-        Server server = new Server("Server", "greedy");
+    public static void main(String[] args) throws RemoteException, NotBoundException, AlreadyBoundException {
+        Server server = new Server("Server1", "greedy");
+        System.out.println("Neme of server: Server1 ");
+        System.out.println("Description of algorithms: Greedy");
     }
 }
